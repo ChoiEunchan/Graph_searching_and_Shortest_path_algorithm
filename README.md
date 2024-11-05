@@ -1,5 +1,5 @@
 # Graph_searching_and_Shortest_path_algorithm
-### There may be errors when running in a Windows or other environment so LINUX environment is recommended <br/> (Work Environment : Ubuntu 18.04)
+### There may be errors when running in a Windows or other environment so LINUX environment is recommended. <br/> (Work Environment : Ubuntu 18.04)
 
 - This project implemented graph searching algorithms and finding shortest path.\
 Implemented algorithms : **BFS, DFS, Kruskal, Dijkstra, Bellman Ford, Floyd**\
@@ -37,11 +37,11 @@ See the chart below for the data formats and image below is an example.
         <tr>
             <td> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 2 </td>
             <td> First one : Destination vertex number<br/>
-                 Second one : weitght of between departure & destination. </td>
+                 Second one : Weitght between departure & destination. </td>
         </tr>
     </table>
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src = "./readme_file/graphL_example.png"/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img src = "./readme_file/graphL_example.png"/>
 <br/><br/>
 - Program commands are those, `LOAD`, `PRINT`, `BFS`, `DFS`, `KRUSKAL`, `DIJKSTRA`, `BELLMANFORD`, `FLOYD` and `EXIT`.\
 Each commands are explained in following table.
@@ -100,7 +100,7 @@ Each commands are explained in following table.
             <td> KRUSKAL </td>
             <td> Find Minimum Spanning Tree, MST, from the graph and print edges in ascending order by weight.
             </td>
-            <td> 600 </td>
+            <td> 500 </td>
             <td> KRUSKAL </td>
         </tr>
         <tr>
@@ -110,7 +110,7 @@ Each commands are explained in following table.
             [From vertex]&emsp;&emsp;Destination(weight)<br/>
             If there's unreachable node, print 'x' instead of destination and its weight.
             </td>
-            <td> 700 </td>
+            <td> 600 </td>
             <td> DIJKSTRA Y 0 <br/>or<br/> DIJKSTRA N 1
             </td>
         </tr>
@@ -119,17 +119,15 @@ Each commands are explained in following table.
             <td> Do Bellmanford and print its result.<br/>
             Command options are three, directional, start vertex and destination.<br/>
             Print all vertices visited and final cost. If there's unreachable node, print 'x'</td>
-            <td> 800 </td>
+            <td> 700 </td>
             <td>  BELLMANFORD Y 2 9
             </td>
         </tr>
         <tr>
             <td> FLOYD </td>
             <td> Do Floyd considering directional option and print its result. If there's unreachable node, print 'x'</td>
-            <td> 900 </td>
-            <td>  DELETE DATE 2024-10-21<br/>
-                DELETE NAME chan
-            </td>
+            <td> 800 </td>
+            <td> FLOYD </td>
         </tr>
         <tr>
             <td> EXIT </td>
@@ -145,85 +143,13 @@ Each commands are explained in following table.
         </tr>
     </table>
 
-    <!-- <table>
-        <tr>
-            <th colspan='2'> <h2>Printing format</h2></td>
-        </tr>
-        <tr>
-            <th> Command </td>
-            <th> Format </td>
-        </tr>
-        <tr>
-            <td> LOAD </td>
-            <td> 1. Data file does not exist.<br/>
-                2. Any member information is in "Member_Queue".<br/>
-            </td>
-        </tr>
-        <tr>
-            <td> ADD </td>
-            <td> Data format is not fit. </td>
-        </tr>
-        <tr>
-            <td> QPOP </td>
-            <td> There's no data in "Member_Queue"</td>
-        </tr>
-        <tr>
-            <td> SEARCH </td>
-            <td> No names match. </td>
-        </tr>
-        <tr>
-            <td> PRINT </td>
-            <td> There's no data in BST.</td>
-        </tr>
-        <tr>
-            <td> DELETE </td>
-            <td> 1. If the member information you want to delete does not exist. <br/>
-                2. If there is no data in the data structure, Terms_List and BSTs.
-            </td>
-            </td>
-        </tr>
-    </table>
-
-    <table>
-        <tr>
-            <th colspan='2'> <h2>Error condition</h2></td>
-        </tr>
-        <tr>
-            <th> Command </td>
-            <th> Situation that error's occured </td>
-        </tr>
-        <tr>
-            <td> LOAD </td>
-            <td> 1. Data file does not exist.<br/>
-                2. Any member information is in "Member_Queue".<br/>
-            </td>
-        </tr>
-        <tr>
-            <td> ADD </td>
-            <td> Data format is not fit. </td>
-        </tr>
-        <tr>
-            <td> QPOP </td>
-            <td> There's no data in "Member_Queue"</td>
-        </tr>
-        <tr>
-            <td> SEARCH </td>
-            <td> No names match. </td>
-        </tr>
-        <tr>
-            <td> PRINT </td>
-            <td> There's no data in BST.</td>
-        </tr>
-        <tr>
-            <td> DELETE </td>
-            <td> 1. If the member information you want to delete does not exist. <br/>
-                2. If there is no data in the data structure, Terms_List and BSTs.
-            </td>
-            </td>
-        </tr>
-    </table> -->
-
-- After run this program, log file `log.txt` is remained and there are result of each command.
+- Cautions for executing code are following.
+    ```
+    1. Graph data is neccessary so you should execute 'LOAD' command first before you run the other commands.
+    2. If you enter wrong vertex number, it'll occurs error code. Check your graph and number of vertecies.
+    3. Command options must include just like example's format of each command.
+    ```
+- After run this program, log file `log.txt` is remained and there are results of each command.
 - Run following codes when you run this program. Current directory must be the root directory of this project.
     ``` bash
     make
