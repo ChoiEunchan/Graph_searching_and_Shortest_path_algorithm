@@ -66,16 +66,26 @@ bool BFS(Graph* graph, const char option, const int start_vertex) {
     map<int, int>().swap(m);
     return true;
 }
+void DFS_R(Graph* graph, const char option, bool* visit, const int vertex) {
+    ofstream fout;
+    map<int, int> m;
+    visit[vertex - 1] = true;
+    fout.open("log.txt", ios::app);
+    fout << vertex;
+    graph->getAdjacentEdgesDirect(vertex, &m);
+    if (option == 'N' || option == 'n')
+        graph->getAdjacentEdges(vertex, &m);
+    return;
 
+}
 bool DFS(Graph* graph, const char option,  const int start_vertex) {   
     int n = graph->getSize();
     if (n == 0) return false;
     ofstream fout;
     map<int, int> m;
     map<int, int>::iterator it;
-    bool* visited = new bool [n];
-    bool finish = false;
-    int cur_vertex = start_vertex, prev_vertex;
+    bool visited[n];
+    int cur_vertex = start_vertex;
     fill(visited, visited+n, false);
     graph->getAdjacentEdgesDirect(start_vertex, &m);
     if (option == 'N' || option == 'n')
@@ -90,25 +100,21 @@ bool DFS(Graph* graph, const char option,  const int start_vertex) {
     it = m.begin();
     //Traverse the graph and print vertcies that are visited.
     //When the destination is visited then, return to previous node and go to another adjacented node.
-    while (!finish) {
-        finish = true;
-        if (!visited[cur_vertex-1]) {
-            fout << cur_vertex;
-            visited[cur_vertex-1] = true;
-            prev_vertex = cur_vertex;
-            cur_vertex = it->first;
+    stack<int>st;
+    st.push(cur_vertex);
+    while (!st.empty()) {
+        if (!visited[st.top()-1]) {
+            fout << st.top();
+            visited[st.top()-1] = true;
             for (it; it != m.end(); it++) {
                 if (!visited[it->first - 1]) {
                     cur_vertex = it->first;
-                    finish = false;
+                    st.push(cur_vertex);
                     break;
                 }
             }
-            if (it != m.end())
+            if (!visited[st.top()-1])
                 fout << " -> ";
-                
-            else
-                break;
             m.clear();
             if (option == 'N' || option == 'n')
                 graph->getAdjacentEdges(cur_vertex, &m);
@@ -116,118 +122,30 @@ bool DFS(Graph* graph, const char option,  const int start_vertex) {
             it = m.begin();
         }
         else {
-            for (it; it != m.end(); it++) {
+            st.pop();
+            m.clear();
+            cur_vertex = st.top();
+            if (option == 'N' || option == 'n')
+                graph->getAdjacentEdges(cur_vertex, &m);
+            graph->getAdjacentEdgesDirect(cur_vertex, &m);
+            for (it = m.begin(); it != m.end(); it++) {
                 if (!visited[it->first-1]) {
                     cur_vertex = it->first;
-                    finish = false;
                     break;
                 }
             }
+            if (it == m.end()) {
+                st.pop();
+                cur_vertex = st.top();
+            }
+                
         }
     }
     fout << "\n======================" << endl << endl;			
     fout.close();
     m.clear();
     map<int, int>().swap(m);
-    delete[] visited;
-    return true;
-}
-bool KWANGWOON(Graph* graph) {
-    if (graph->getType() != 1)
-        return false;
-    int n = graph->getSize();
-    if (n == 0)
-        return false;
     
-    int visited_nodes = 1, cur_vertex = 1, tree_size = 0, temp_vertex = 0, prev_vertex = 1;
-    int remained_nodes[n];
-    vector<int>* vertex_segment_tree;
-    queue<int> q;
-    ofstream fout;
-    q.push(1);
-    for (int i = n; i >= 1; i--) {
-        vertex_segment_tree = graph->getSegmentTree(i);
-        sort(vertex_segment_tree->begin(), vertex_segment_tree->end());
-        remained_nodes[i-1] = vertex_segment_tree->size();
-        //Initialize the number of remained node to visit.
-        tree_size = vertex_segment_tree->size();
-        for (int j = 0; j < tree_size - 1; j++) {
-            cur_vertex = vertex_segment_tree->size() - 1 - 2*j;
-            visited_nodes = vertex_segment_tree->at(cur_vertex) + vertex_segment_tree->at(cur_vertex-1);
-            vertex_segment_tree->insert(vertex_segment_tree->begin(), visited_nodes);
-        }
-        vertex_segment_tree->insert(vertex_segment_tree->begin(), 0);
-        //Build segment trees for each vertecies.
-    }
-    cur_vertex = 1;
-    fout.open("log.txt", ios::app);
-    fout << "======== KWANGWOON ========" << endl;
-    fout << "Start vertex : 1" << endl << "1 -> ";
-    while (remained_nodes[cur_vertex] > 0) {
-        for (int i = 1; i <= n; i++) {
-            temp_vertex = 1;
-            if (i != prev_vertex) {
-                vertex_segment_tree = graph->getSegmentTree(i);
-                tree_size = vertex_segment_tree->size();
-                for (temp_vertex = tree_size/2; temp_vertex < tree_size; temp_vertex++) {
-                    if (vertex_segment_tree->at(temp_vertex) == prev_vertex) {
-                        while (temp_vertex > 0) {
-                            vertex_segment_tree->at(temp_vertex)-= prev_vertex;
-                            temp_vertex /= 2;
-                        }
-                        remained_nodes[i-1]--;
-                        break;
-                    }
-                }
-            }
-            //Update segment trees containing previously visited vertices.
-        }
-        temp_vertex = 1;
-        vertex_segment_tree = graph->getSegmentTree(cur_vertex);
-        tree_size = vertex_segment_tree->size();
-        if (vertex_segment_tree->at(1) == 0) 
-            break;
-        
-        //A root node of 0 means that all vertices that can be reached from that vertex have been visited.
-        //So, when the root node is 0, there is no vertex to which it can currently go, exit the loop.
-        
-        if (remained_nodes[cur_vertex-1] % 2 == 0) {
-            temp_vertex = tree_size / 2;
-            cur_vertex = vertex_segment_tree->at(temp_vertex);
-            //If the number of remained node visitable is even, find the smallest vertex.
-            while (cur_vertex == 0 && temp_vertex <= tree_size) {
-                temp_vertex++;
-                cur_vertex = vertex_segment_tree->at(temp_vertex);
-            }
-            //If the vertex has already been visited, find the smallest vertex among the remaining vertices.
-        }
-        else {
-            temp_vertex = vertex_segment_tree->size() - 1;
-            cur_vertex = vertex_segment_tree->at(temp_vertex);
-            while (cur_vertex == 0) {
-                temp_vertex--;
-                cur_vertex = vertex_segment_tree->at(temp_vertex);
-            }
-        }
-        //If there are an odd number of remaining vertices, find the largest node and,
-        //if that node has been visited, find the next rank.
-        while (temp_vertex > 0) {
-            vertex_segment_tree->at(temp_vertex) -= cur_vertex;
-            temp_vertex /= 2;
-        }
-        //Subtracts the amount corresponding to the current node from the values ​​of all parent nodes of the node and itself.
-        remained_nodes[prev_vertex - 1]--;
-        if (remained_nodes[cur_vertex] == 0)
-            fout << cur_vertex << endl;
-        else
-            fout << cur_vertex << " -> ";
-        q.push(cur_vertex);
-        prev_vertex = q.back();
-        //Decrease the number of nodes that can be visited from the current node by one.
-        //Push the vertex into the queue to print.
-    }
-    fout << "===========================" << endl << endl;
-    fout.close();
     return true;
 }
 
@@ -357,15 +275,17 @@ bool checkCycle(multimap<int, pair<int, int>>* spt, int* disjoint_set, const pai
     root1 = edge.first;
     while (disjoint_set[root1] > 0)
         root1 = disjoint_set[root1];
-
+    //get a first node's root.
     root2 = edge.second;
     while (disjoint_set[root2] > 0)
         root2 = disjoint_set[root2];
-
+    //get a second node's root.
     if (root1 != root2)
         return false;
+    //If root1 and root2 are different, there's no cycle so return false.
     else
         return true;
+    //If root1 and root2 are same, there's cycle so return true.
 }
 
 bool checkLink(multimap<int, pair<int, int>>* spt, const pair<int, int>edge, const int size) {
@@ -435,7 +355,6 @@ bool Dijkstra(Graph* graph, const char option, const int start) {
             else {
                 if (it_edge->second < 0)
                     return false;
-                
                 done = false;
                 tmp_dist1 = it_edge->second + distance[0];
                 tmp_node = it_edge->first;
@@ -517,6 +436,7 @@ bool Bellmanford(Graph* graph, const char option, const int s_vertex, const int 
     for (it1; it1 != edgeset[s_vertex-1].end(); it1++) {
         distance[it1->first - 1] = it1->second;
         path[it1->first - 1] = s_vertex;
+        //Initialize each distance by edge weight.
     }
     for (int k = 2; k < n; k++) {
         for (int i = 0; i < n; i++) {
@@ -533,6 +453,7 @@ bool Bellmanford(Graph* graph, const char option, const int s_vertex, const int 
                         distance[i] = cur_temp_dist;
                         path[i] = j + 1;
                     }
+                    //distance[i] = min(distance[i], distance[j] + edge[j][i])
                 }
             }
         }
@@ -550,6 +471,7 @@ bool Bellmanford(Graph* graph, const char option, const int s_vertex, const int 
 
                 if (distance[i] > cur_temp_dist) 
                     return false;
+                //Find negative cycle and it occured, return error.
                 
             }
         }
@@ -611,6 +533,7 @@ bool FLOYD(Graph* graph, const char option) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++)
                 result[i][j] = min(result[i][j], result[i][k] + result[k][j]);
+                //Get shortest path by floyd's algorithm.
         }
     }
     for (int k = 1; k < n; k++) {
@@ -619,6 +542,7 @@ bool FLOYD(Graph* graph, const char option) {
                 prev_result = result[i][j];
                 if (prev_result != min(prev_result, result[i][k] + result[k][j])) 
                     return false;
+                //Check negative cycle. If it occured, return false.
                 
             }
                 
@@ -644,5 +568,6 @@ bool FLOYD(Graph* graph, const char option) {
 	}
 	fout << "======================" << endl << endl;
 	fout.close();
+    //Print the results.
     return true;
 }

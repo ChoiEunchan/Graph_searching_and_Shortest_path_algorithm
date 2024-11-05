@@ -6,7 +6,7 @@
 
 bool BFS(Graph* graph, const char option, int vertex);
 bool DFS(Graph* graph, const char option,  const int vertex);
-bool KWANGWOON(Graph* graph);
+void DFS_R(Graph* graph, const char option, bool* visit, const int vertex);
 bool Kruskal(Graph* graph);
 void QuickSort(vector<tuple<int, int, int>>* graph, const int start, const int end);
 void InsertionSort(vector<tuple<int, int, int>>* graph, const int start, const int end);
