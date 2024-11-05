@@ -12,7 +12,7 @@
 Manager::Manager()	 {
 	graph = nullptr;
 	load = 0;	//Anything is not loaded
-	fout.open("log.txt");
+	fout.open("log.txt", ios::app);
 	fout.close();
 }
 
@@ -38,46 +38,41 @@ void Manager::run(const char *command_txt) {
 		getline(fin, whole_cmd);
 		//Get a command from the text file.
 		temp = whole_cmd.find(" ");
-		if (temp != -1)
-			command = whole_cmd.substr(0, temp);
-		if (command.compare("LOAD") == 0) {
-			cmd_option = whole_cmd.substr(command.length() + 1);
-			operation = LOAD(cmd_option);
-			if (operation == true) {
-				printSuccessCode("LOAD");
-				load = 1;
+		if (temp == -1) {
+			if (whole_cmd.compare("PRINT") == 0) {
+				operation = PRINT();
+				if (!operation)
+					printErrorCode(200);
+				//If the operation ends unsuccessfully, write failure message to the file.
+			}
+			else if (whole_cmd.compare("KRUSKAL") == 0) { //Execute the KRUSKAL command.
+				operation = mKRUSKAL();
+				if (!operation)
+					printErrorCode(500);
+				//If the operation ends unsuccessfully, write failure message to the file.
+			}
+			else if (whole_cmd.compare("EXIT") == 0) {
+				//Terminate the program if the command is "EXIT".
+				printSuccessCode("EXIT");
+				break;
 			}
 			else
-				printErrorCode(100);
+				printErrorCode(1000);
 		}
-		else if (whole_cmd.compare("PRINT") == 0) {
-			operation = PRINT();
-			if (!operation)
-				printErrorCode(200);
-			//If the operation ends unsuccessfully, write failure message to the file.
-		}
-		else if (whole_cmd.compare("KRUSKAL") == 0) { //Execute the KRUSKAL command.
-			operation = mKRUSKAL();
-			if (!operation)
-				printErrorCode(600);
-			//If the operation ends unsuccessfully, write failure message to the file.
-				
-		}
-		else if (whole_cmd.compare("KWANGWOON") == 0) { //Execute the KRUSKAL command.
-			operation = mKWANGWOON();
-			if (!operation)
-				printErrorCode(500);
-			//If the operation ends unsuccessfully, write failure message to the file.
-				
-		}
-		else if (whole_cmd.compare("EXIT") == 0) {
-			//Terminate the program if the command is "EXIT".
-			printSuccessCode("EXIT");
-			break;
-		}
-				
 		else {
+			command = whole_cmd.substr(0, temp);
 			directionality = whole_cmd[temp+1];
+			if (command.compare("LOAD") == 0) {
+				cmd_option = whole_cmd.substr(command.length() + 1);
+				operation = LOAD(cmd_option);
+				if (operation == true) {
+					printSuccessCode("LOAD");
+					load = 1;
+				}
+				else
+					printErrorCode(100);
+				continue;
+			}
 			if (command.length() + 2 < whole_cmd.length()) {
 				cmd_option = whole_cmd.substr(command.length() + 1);
 				vertex1 = stoi(cmd_option.substr(cmd_option.length()-1)); //Find start vertex.
@@ -85,7 +80,6 @@ void Manager::run(const char *command_txt) {
 			if (command.compare("BFS") == 0) {
 				if ((vertex1 > graph->getSize())) {
 					printErrorCode(300);
-					continue;
 				}
 				operation = mBFS(directionality, vertex1);
 				if (!operation)
@@ -95,7 +89,6 @@ void Manager::run(const char *command_txt) {
 			else if (command.compare("DFS") == 0) {
 				if ((vertex1 > graph->getSize())) {
 					printErrorCode(400);
-					continue;
 				}
 				operation = mDFS(directionality, vertex1);
 				if (!operation)
@@ -104,35 +97,33 @@ void Manager::run(const char *command_txt) {
 			}			
 			else if (command.compare("DIJKSTRA") == 0) {
 				if ((vertex1 > graph->getSize())) {
-					printErrorCode(700);
-					continue;
+					printErrorCode(600);
 				}
 				//Execute the DIJKSTRA command.
 				operation = mDIJKSTRA(directionality, vertex1);
 				if (!operation)
-					printErrorCode(700);
+					printErrorCode(600);
 				//If the function ends unsuccessfully, print failure message to the file.
 			}
 			else if (command.compare("BELLMANFORD") == 0) { //Execute the BELLMANFORD command.
 				vertex1 = stoi(cmd_option.substr(2, 1));
 				vertex2 = stoi(cmd_option.substr(4, cmd_option.length() -1));
 				if (vertex2 > graph->getSize() || vertex1 > graph->getSize()) {
-					printErrorCode(800);
-					continue;
+					printErrorCode(700);
 				}
 				operation = mBELLMANFORD(directionality, vertex1, vertex2);
 				if (!operation)
-					printErrorCode(800);
+					printErrorCode(700);
 				//If not, print failure message and write it to the file.
 			}
 			else if (command.compare("FLOYD") == 0) { //Execute the FLOYD command.
 				operation = mFLOYD(directionality);
 				if (!operation)
-					printErrorCode(900);
+					printErrorCode(800);
 				//If not, print failure message and write it to the file.
 			}
 			else
-				printErrorCode(1000);
+				printErrorCode(1000);	
 		}
 		command.clear();
 		cmd_option.clear();
@@ -227,11 +218,6 @@ bool Manager::mDFS(const char option, const int vertex) {
 	result = DFS(graph, option, vertex);
 	return result;
 }
-bool Manager::mKWANGWOON() {
-	result = KWANGWOON(graph);
-	return result;
-}
-
 bool Manager::mDIJKSTRA(const char option, const int vertex) {
 	result = Dijkstra(graph, option, vertex);
 	return result;
